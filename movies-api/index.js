@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import moviesRouter from './api/movies';
 import bodyParser from 'body-parser';
+import usersRouter from './api/users';
 //use body-parser in it's middleware stack. 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use(bodyParser.urlencoded());//step to add post(Add movies)_
 
 app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
+//Users router
+app.use('/api/users', usersRouter);
 app.use(errHandler);
 
 

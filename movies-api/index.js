@@ -1,6 +1,6 @@
 import './db';
 import session from 'express-session';
-import authenticate from './authenticate';
+import passport from './authenticate';
 import {loadUsers} from './seedData'
 import dotenv from 'dotenv';
 import express from 'express';
@@ -39,6 +39,8 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+// initialise passport​
+app.use(passport.initialize());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());//step to add post(Add movies)_
 
@@ -46,8 +48,10 @@ app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
 //Users router
 app.use('/api/users', usersRouter);
-//update /api/Movie route
-app.use('/api/movies', authenticate, moviesRouter);
+
+// Add passport.authenticate(..)  to middleware stack for protected routes​
+app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
+
 app.use(errHandler);
 
 

@@ -3,8 +3,13 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const MovieSchema = new Schema({
-  id: Number,
-  title: String
+  //original
+  //id: Number,
+  //title: String
+
+  //exercise
+  id: {type: Number, required: true},
+  title: {type: String, required: true}
 });
 
 const UserSchema = new Schema({

@@ -1,10 +1,14 @@
 import './db';
+import session from 'express-session';
+import authenticate from './authenticate';
 import {loadUsers} from './seedData'
 import dotenv from 'dotenv';
 import express from 'express';
 import moviesRouter from './api/movies';
 import bodyParser from 'body-parser';
 import usersRouter from './api/users';
+
+
 //use body-parser in it's middleware stack. 
 dotenv.config();
 
@@ -30,7 +34,11 @@ const errHandler = (err, req, res, next) => {
 if (process.env.SEED_DB) {
   loadUsers();
 }
-
+app.use(session({
+  secret: 'ilikecake',
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());//step to add post(Add movies)_
 
@@ -38,6 +46,8 @@ app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
 //Users router
 app.use('/api/users', usersRouter);
+//update /api/Movie route
+app.use('/api/movies', authenticate, moviesRouter);
 app.use(errHandler);
 
 

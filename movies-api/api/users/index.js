@@ -14,6 +14,27 @@ router.post('/', (req, res ,next) => {
     User.create(req.body).then(user => res.status(200).json({success:true,token:"FakeTokenForNow"})).catch(next);
 });
 
+
+// authenticate a user
+router.post('/', (req, res, next) => {
+  if (!req.body.username || !req.body.password) {
+      res.status(401).send('authentication failed');
+  } else {
+      User.findByUserName(req.body.username).then(user => {
+          if (user.comparePassword(req.body.password)) {
+              req.session.user = req.body.username;
+              req.session.authenticated = true;
+              res.status(200).json({
+                  success: true,
+                  token: "temporary-token"
+                });
+          } else {
+              res.status(401).json('authentication failed');
+          }
+      }).catch(next);
+  }
+});
+
 // Update a user
 router.put('/:id',  (req, res ,next) => {
     if (req.body._id) delete req.body._id;
@@ -24,6 +45,7 @@ router.put('/:id',  (req, res ,next) => {
     })
     .then(user => res.json(200, user)).catch(next);
 });
+
 
 router.post('/:userName/favourites', (req, res, next) => {
   const newFavourite = req.body;
@@ -41,6 +63,7 @@ router.post('/:userName/favourites', (req, res, next) => {
       res.status(401).send("Unable to find user")
   }
 });
+
 router.get('/:userName/favourites', (req, res, next) => {
   const user = req.params.userName;
   User.find( {username: user}).then(
